@@ -1,0 +1,22 @@
+body {
+  background-image: url("Resources/backround.jpg"); /* Replace with your image path */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    background-size: cover; /* Scales the image to cover the entire element */
+    background-position: center top; /* Centers the image */
+}
+
+.white-bg-element {
+  background-color: white;
+  padding: 10px;
+}
+
+.horizontal-list {
+    list-style: none; /* Removes default bullet points */
+    padding: 0; /* Removes default left padding */
+    margin: 0; /* Removes default margin */
+}
+
+.horizontal-list li {
+    display: inline-block; /* Displays list items horizontally */
+    margin-right: 10px; /* Adds spacing between items */
+}
