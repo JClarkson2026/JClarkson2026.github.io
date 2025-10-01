@@ -79,3 +79,10 @@ button#active {
 button#active:hover {
   color: white;
 }
+
+#cool {
+  font-size: xx-large;
+  font-weight: bold;
+  border: 10px solid blue;
+  padding: 30px;
+}
