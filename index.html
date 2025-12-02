@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="white-bg-element">
-        <h1 id = "main">Hey, I'm Jac...</h1>
+        <h1 id = "main">Hey, I'm Jac... </h1>
         <div class="header-button-container">
             <a href="index.html">
                 <button id = "active">Home</button>
@@ -17,6 +17,7 @@
             <a href="Pages/alt.html">
                 <button>Alternative</button>
             </a>
+            <button onclick="toggleDarkMode()">Toggle Mode</button>
         </div>
     </div>
     
@@ -29,9 +30,63 @@
     </div>
     
     <p class="white-bg-element">This is a simple demonstration of my HTML abilities. I'm a student at Warren Tech, and Evergreen Highschool and I'm and aspiring Computer Science Major</p>
+    <button onclick="changeBackgroundColor()">Change Background Color</button>
 
     <img class="white-bg-element" src="Resources/firefrong.jpg" alt="Cool Frog"> 
 
     <p class="white-bg-element" id = "cool">wow look at me !!!</p>
+
+    <script>
+        function changeBackgroundColor() {
+            const elements = document.querySelectorAll('.white-bg-element');
+
+            // Iterate through the selected elements and change their color
+            elements.forEach(element => {
+                element.style.backgroundColor = 'red'; // Set a new color
+            });
+        }
+
+                // Add this to your existing JavaScript
+        function playBackgroundMusic() {
+            var audio = new Audio('Resources/rule.mp3');
+            audio.loop = true;
+            audio.play();
+        }
+
+        // Modify your window.onload function
+        window.onload = function() {
+            playBackgroundMusic();
+        };
+
+        function toggleDarkMode() {
+            document.querySelectorAll('.white-bg-element').forEach(el => el.classList.toggle('dark-theme'));
+        }
+
+        function typeEffect(element, text, speed = 50) {
+            // create a counter to iterate over the characters in `text`
+            let i = 0;
+            
+            // create a function that executes every `speed` microseconds
+            const timer = setInterval(() => {
+                // while the counter is less than the length of the `text` string
+                if (i < text.length) {
+                    // update the contents of the HTML `element` by adding the next character in the `text` string to it
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    // when finished, stop the loop
+                    clearInterval(timer);
+                }
+            }, speed);
+        }
+
+        // use it like this:
+        window.onload = function() {
+            // get the target HTML element
+            const element = document.getElementById('main');
+            // execute the typeEffect function with the element and a message
+            typeEffect(element, "Welcome to my awesome website!");
+        };
+    </script>
 </body>
 </html>

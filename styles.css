@@ -28,6 +28,11 @@ body {
   margin-bottom: 10px;
 }
 
+.white-bg-element.dark-theme {
+  background-color: black;
+  color: white;
+}
+
 .horizontal-list {
     list-style: none; /* Removes default bullet points */
     padding: 0; /* Removes default left padding */

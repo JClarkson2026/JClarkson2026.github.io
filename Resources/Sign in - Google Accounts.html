@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>TRAINING — Safe Sign-in Simulation</title>
+<style>
+  :root{
+    --bg:#f5f8fc;
+    --card:#ffffff;
+    --accent:#1463d6;    /* pleasant blue but not Google blue */
+    --muted:#6b7280;
+    --danger:#b91c1c;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#f8fbff,#eef6ff);color:#0f172a}
+  .page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px}
+  .wrap{width:100%;max-width:980px;display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start}
+  .left{
+    padding:24px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fbfdff);
+    box-shadow:0 12px 40px rgba(2,6,23,0.06);border:1px solid rgba(16,24,40,0.03);
+  }
+  .header{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .logo-box{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff,#eef7ff);box-shadow:0 8px 20px rgba(16,24,40,0.04)}
+  .wordmark{font-weight:800;font-size:20px;line-height:1;color:#0f172a}
+  .training-badge{margin-left:auto;padding:8px 12px;border-radius:10px;background:#fff6f6;border-left:6px solid var(--danger);color:#7f1d1d;font-weight:800;font-size:13px}
+  .lead{color:var(--muted);margin:6px 0 18px 0}
+  .device{
+    border-radius:12px;padding:18px;background:var(--card);border:1px solid #e8f0ff;box-shadow:0 8px 30px rgba(2,6,23,0.04)
+  }
+  .fake-url{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;background:#f6fbff;border:1px solid #e6f0ff;font-family:monospace;font-weight:700;color:#0b3b66}
+  .padlock{width:18px;height:18px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;background:#dff2ff;color:#0b3b66;font-size:12px}
+  label{display:block;margin-top:12px;font-size:13px;color:#374151}
+  input[type="text"], input[type="password"]{
+    width:100%;padding:10px 12px;margin-top:8px;border-radius:10px;border:1px solid #e9f2ff;background:#fff;font-size:14px;box-sizing:border-box;
+  }
+  .row{display:flex;gap:8px;align-items:center;margin-top:12px}
+  .btn{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+  .btn.ghost{background:transparent;border:1px solid #eaf2ff;color:var(--muted)}
+  .muted{font-size:13px;color:var(--muted);margin-top:10px}
+  footer{font-size:12px;color:var(--muted);margin-top:14px}
+
+  /* controls column */
+  .controls{padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff,#fbfdff);box-shadow:0 8px 24px rgba(2,6,23,0.04);border:1px solid rgba(16,24,40,0.02)}
+  .controls h3{margin:0 0 8px 0}
+  .switch{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f1f7ff}
+  .switch:last-child{border-bottom:0}
+  .checkbox{display:inline-flex;gap:8px;align-items:center;color:#374151}
+  .log{margin-top:12px;background:#fbfdff;padding:10px;border-radius:8px;border:1px solid #eef6ff;max-height:150px;overflow:auto;color:var(--muted);font-size:13px}
+
+  /* urgent banner */
+  .urgent{background:#fff3ed;border-left:6px solid #f97316;color:#92400e;padding:10px;border-radius:8px;margin-top:12px;font-weight:700;display:none}
+
+  /* modal */
+  .backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+  .modal{background:white;padding:18px;border-radius:10px;max-width:720px;width:100%;box-shadow:0 18px 60px rgba(2,6,23,0.6)}
+  .modal h2{margin:0 0 6px 0}
+  .ok{margin-top:12px;padding:8px 12px;border-radius:10px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+
+  /* responsive */
+  @media (max-width:920px){.wrap{grid-template-columns:1fr;padding:12px}.controls{order:2;margin-top:16px}}
+</style>
+</head>
+<body>
+  <div class="page">
+    <div class="wrap" role="main">
+      <div class="left" aria-live="polite">
+        <div class="header">
+          <div class="logo-box" aria-hidden="true">
+            <!-- abstract icon (not a brand) -->
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="7" cy="7" r="3.4" fill="#EF4444"/>
+              <circle cx="17" cy="7" r="3.4" fill="#F59E0B"/>
+              <circle cx="7" cy="17" r="3.4" fill="#10B981"/>
+              <circle cx="17" cy="17" r="3.4" fill="#3B82F6"/>
+            </svg>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div class="wordmark">SearchCo</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">Simulated sign-in — <strong style="color:var(--danger)">TRAINING ONLY</strong></div>
+          </div>
+          <div class="training-badge" aria-hidden="true">DO NOT ENTER REAL PASSWORDS — TRAINING</div>
+        </div>
+
+        <p class="lead">This is a training simulation of a modern sign-in flow. It intentionally does not copy any real company's branding. Use the controls on the right to add common red flags (typosquatting, insecure connection, unexpected fields, urgency).</p>
+
+        <div class="device" id="device">
+          <div class="fake-url" id="fakeUrl" aria-hidden="true">
+            <div class="padlock" id="padlock">🔒</div>
+            <div id="urlText">https://training.example/session</div>
+            <div style="margin-left:auto;font-weight:700;color:#0b3b66;font-size:12px">TRAINING</div>
+          </div>
+
+          <form id="simForm" autocomplete="off" onsubmit="return false;" style="margin-top:14px">
+            <label for="user">Email</label>
+            <input id="user" name="user" type="text" placeholder="you@example.com" required>
+
+            <label for="pass">Password</label>
+            <input id="pass" name="pass" type="password" placeholder="Enter a fake password" required>
+
+            <div class="row">
+              <button class="btn" id="submitBtn" type="button">Simulate sign in</button>
+              <button class="btn ghost" id="explainBtn" type="button">Explain red flags</button>
+            </div>
+
+            <div class="urgent" id="urgentBanner">Action required: confirm your account now — this is an example of urgency used in phishing.</div>
+
+            <div class="muted">No data leaves your browser. This is for training only.</div>
+          </form>
+
+          <footer>Instructor note: keep the TRAINING badge visible at all times when using this demo.</footer>
+        </div>
+      </div>
+
+      <aside class="controls" aria-label="Training controls">
+        <h3>Training toggles</h3>
+
+        <div class="switch">
+          <div>
+            <div style="font-weight:700">Misspelled domain</div>
+            <div style="font-size:13px;color:var(--muted)">Subtle typo to teach domain checking.</div>
+          </div>
+          <label class="checkbox"><input type="checkbox" id="typoToggle"> Enable</label>
+        </div>
+
+        <div class="switch">
+          <div>
+            <div style="font-weight:700">Insecure HTTP</div>
+            <div style="font-size:13px;color:var(--muted)">Show http:// and remove padlock icon.</div>
+          </div>
+          <label class="checkbox"><input type="checkbox" id="httpToggle"> Enable</label>
+        </div>
+
+        <div class="switch">
+          <div>
+            <div style="font-weight:700">Request extra field</div>
+            <div style="font-size:13px;color:var(--muted)">Add unexpected "Employee ID" field.</div>
+          </div>
+          <label class="checkbox"><input type="checkbox" id="extraToggle"> Enable</label>
+        </div>
+
+        <div class="switch">
+          <div>
+            <div style="font-weight:700">Show urgent banner</div>
+            <div style="font-size:13px;color:var(--muted)">Display urgency message to discuss psychological tactics.</div>
+          </div>
+          <label class="checkbox"><input type="checkbox" id="urgentToggle"> Enable</label>
+        </div>
+
+        <div style="margin-top:12px;font-size:13px;color:var(--muted)">Session log (local only)</div>
+        <div id="log" class="log">No interactions yet.</div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="backdrop" id="modal" role="dialog" aria-modal="true" style="display:none">
+    <div class="modal">
+      <h2 id="modalTitle">Simulated submission — training</h2>
+      <p id="modalText">This demo simulated a sign-in. No credentials were sent anywhere. Discuss the red flags you enabled and what a learner should check in a real page (URL, certificate details, unexpected fields, urgency, sender email).</p>
+      <p style="color:var(--muted)">Suggested instructor prompts:</p>
+      <ul>
+        <li>How would you verify the domain and certificate in a real browser?</li>
+        <li>Would the padlock alone prove the site is legitimate? (Hint: no.)</li>
+        <li>What extra signals would make you suspicious?</li>
+      </ul>
+      <button class="ok" id="closeModal">OK — close</button>
+    </div>
+  </div>
+
+<script>
+  const typoToggle = document.getElementById('typoToggle');
+  const httpToggle = document.getElementById('httpToggle');
+  const extraToggle = document.getElementById('extraToggle');
+  const urgentToggle = document.getElementById('urgentToggle');
+  const urlText = document.getElementById('urlText');
+  const padlock = document.getElementById('padlock');
+  const log = document.getElementById('log');
+  const submitBtn = document.getElementById('submitBtn');
+  const explainBtn = document.getElementById('explainBtn');
+  const modal = document.getElementById('modal');
+  const closeModalBtn = document.getElementById('closeModal');
+  const urgentBanner = document.getElementById('urgentBanner');
+
+  function appendLog(msg){
+    const time = new Date().toLocaleTimeString();
+    const entry = document.createElement('div');
+    entry.textContent = `[${time}] ${msg}`;
+    log.prepend(entry);
+  }
+
+  function updateUrl(){
+    let base = 'training.example/session';
+    if(typoToggle.checked) base = 'tra1ning.examp1e/session';
+    const proto = httpToggle.checked ? 'http://' : 'https://';
+    urlText.textContent = proto + base;
+    padlock.textContent = httpToggle.checked ? '!' : '🔒';
+    appendLog('URL updated to ' + urlText.textContent);
+  }
+
+  typoToggle.addEventListener('change', updateUrl);
+  httpToggle.addEventListener('change', updateUrl);
+
+  extraToggle.addEventListener('change', ()=>{
+    const form = document.getElementById('simForm');
+    const existing = document.getElementById('extraField');
+    if(extraToggle.checked && !existing){
+      const label = document.createElement('label');
+      label.setAttribute('for','extraField');
+      label.textContent = 'Employee ID (unexpected)';
+      label.style.marginTop = '12px';
+      const input = document.createElement('input');
+      input.id = 'extraField';
+      input.name = 'extraField';
+      input.type = 'text';
+      input.placeholder = 'e.g. 123456';
+      form.insertBefore(label, form.querySelector('.muted'));
+      form.insertBefore(input, form.querySelector('.muted'));
+      appendLog('Added unexpected Employee ID field');
+    } else if(!extraToggle.checked && existing){
+      existing.previousElementSibling.remove();
+      existing.remove();
+      appendLog('Removed unexpected Employee ID field');
+    }
+  });
+
+  urgentToggle.addEventListener('change', ()=>{
+    urgentBanner.style.display = urgentToggle.checked ? 'block' : 'none';
+    appendLog('Urgent banner ' + (urgentToggle.checked ? 'ON' : 'OFF'));
+  });
+
+  submitBtn.addEventListener('click', ()=>{
+    // simulate submission safely
+    const user = document.getElementById('user').value || '[blank]';
+    appendLog('Simulated sign-in for ' + user);
+    document.getElementById('modalTitle').textContent = 'Simulated submission — training';
+    document.getElementById('modalText').textContent = 'No credentials were transmitted. Use this moment to review the URL, padlock, unexpected fields, and any urgent language.';
+    modal.style.display = 'flex';
+  });
+
+  explainBtn.addEventListener('click', ()=>{
+    modal.style.display = 'flex';
+    appendLog('Opened explanation modal');
+  });
+
+  closeModalBtn.addEventListener('click', ()=>{ modal.style.display = 'none'; });
+
+  modal.addEventListener('click', (e)=>{ if(e.target === modal) modal.style.display='none'; });
+  document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') modal.style.display='none'; });
+
+  // init
+  updateUrl();
+  appendLog('Training session started');
+</script>
+</body>
+</html>
